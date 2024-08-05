@@ -3,7 +3,7 @@ from flask_login import login_user, current_user, logout_user, login_required
 from app import db
 from app.models import User, Question, QuizResult, QuizSet
 from app.forms import RegistrationForm, LoginForm
-from flask import Blueprint
+from flask import Blueprint, jsonify
 from flask_restful import Api, Resource
 
 
@@ -65,14 +65,45 @@ def results():
     return render_template('results.html', score=score, total=total)
 
 
+@main_bp.route('/admin/add_question', methods=['GET', 'POST'])
+@login_required
+def add_question():
+    if request.method == 'POST':
+        text = request.form['text']
+        options = request.form['options']
+        correct_option = request.form['correct_option']
+        quiz_set_id = request.form['quiz_set_id']
+        question = Question(text=text, options=options, correct_option=correct_option, quiz_set_id=quiz_set_id)
+        db.session.add(question)
+        db.session.commit()
+        return redirect(url_for('main.index'))
+    return render_template('add_question.html')
+
+class QuizQuestionsAPI(Resource):
+    def get(self, quiz_set_id):
+        questions = Question.query.filter_by(quiz_set_id=quiz_set_id).all()
+        return jsonify([{
+            'id': q.id,
+            'text': q.text,
+            'options': q.options.split(','),
+            'correct_option': q.correct_option
+        } for q in questions])
+
+class AddQuestionAPI(Resource):
+    @login_required
+    def post(self):
+        data = request.get_json()
+        question = Question(
+            text=data['text'],
+            options=','.join(data['options']),
+            correct_option=data['correct_option'],
+            quiz_set_id=data['quiz_set_id']
+        )
+        db.session.add(question)
+        db.session.commit()
+        return jsonify({'message': 'Question added successfully'}), 201
+    
 @main_bp.route("/logout")
 def logout():
     logout_user()
     return redirect(url_for('main.index'))
-
-class QuizQuestionResource(Resource):
-    def get(self, quiz_set_id):
-        questions = Question.query.filter_by(quiz_set_id=quiz_set_id).all()
-        return [{'id': q.id, 'text': q.text, 'options': q.options.split(',')} for q in questions]
-
-api.add_resource(QuizQuestionResource, '/quiz/<int:quiz_set_id>/questions')
