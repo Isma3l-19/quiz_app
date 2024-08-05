@@ -1,11 +1,9 @@
-from flask import render_template, redirect, url_for, flash, request
+from flask import Blueprint, render_template, redirect, url_for, flash, request, jsonify
 from flask_login import login_user, current_user, logout_user, login_required
 from app import db
 from app.models import User, Question, QuizResult, QuizSet
 from app.forms import RegistrationForm, LoginForm
-from flask import Blueprint, jsonify
 from flask_restful import Api, Resource
-
 
 main_bp = Blueprint('main', __name__)
 api_bp = Blueprint('api', __name__)
@@ -21,6 +19,7 @@ def register():
     if form.validate_on_submit():
         user = User(username=form.username.data, email=form.email.data)
         user.set_password(form.password.data)
+        user.role = form.role.data  # Set role
         db.session.add(user)
         db.session.commit()
         flash('Account created successfully!', 'success')
@@ -34,11 +33,27 @@ def login():
         user = User.query.filter_by(email=form.email.data).first()
         if user and user.check_password(form.password.data):
             login_user(user, remember=form.remember.data)
-            return redirect(url_for('main.index'))
+            if user.role == 'admin':
+                return redirect(url_for('main.admin_dashboard'))
+            else:
+                print("Redirecting to student_dashboard")
+                return redirect(url_for('main.student_dashboard'))
         else:
             flash('Login unsuccessful. Please check email and password.', 'danger')
     return render_template('login.html', form=form)
 
+
+@main_bp.route("/student_dashboard")
+@login_required
+def student_dashboard():
+    return render_template('student_dashboard.html')
+
+@main_bp.route("/admin_dashboard")
+@login_required
+def admin_dashboard():
+    if current_user.role != 'admin':
+        return redirect(url_for('main.login'))
+    return render_template('admin_dashboard.html')
 
 @main_bp.route("/quiz/<int:quiz_id>", methods=['GET', 'POST'])
 @login_required
@@ -64,10 +79,11 @@ def results():
     total = request.args.get('total', type=int)
     return render_template('results.html', score=score, total=total)
 
-
 @main_bp.route('/admin/add_question', methods=['GET', 'POST'])
 @login_required
 def add_question():
+    if current_user.role != 'admin':
+        return redirect(url_for('main.login'))
     if request.method == 'POST':
         text = request.form['text']
         options = request.form['options']
@@ -76,8 +92,16 @@ def add_question():
         question = Question(text=text, options=options, correct_option=correct_option, quiz_set_id=quiz_set_id)
         db.session.add(question)
         db.session.commit()
-        return redirect(url_for('main.index'))
+        return redirect(url_for('main.admin_dashboard'))
     return render_template('add_question.html')
+
+@main_bp.route('/admin/view_feedback')
+@login_required
+def view_feedback():
+    if current_user.role != 'admin':
+        return redirect(url_for('main.login'))
+    feedbacks = QuizResult.query.all()
+    return render_template('view_feedback.html', feedbacks=feedbacks)
 
 class QuizQuestionsAPI(Resource):
     def get(self, quiz_set_id):
@@ -92,6 +116,8 @@ class QuizQuestionsAPI(Resource):
 class AddQuestionAPI(Resource):
     @login_required
     def post(self):
+        if current_user.role != 'admin':
+            return jsonify({'message': 'Unauthorized'}), 403
         data = request.get_json()
         question = Question(
             text=data['text'],
@@ -102,7 +128,7 @@ class AddQuestionAPI(Resource):
         db.session.add(question)
         db.session.commit()
         return jsonify({'message': 'Question added successfully'}), 201
-    
+
 @main_bp.route("/logout")
 def logout():
     logout_user()
