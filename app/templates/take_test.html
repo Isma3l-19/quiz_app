@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+{% block content %}
+<h1>{{ quiz_set.title }}</h1>
+<form method="POST">
+    <div class="form-group">
+        <label>{{ question.text }}</label>
+        <div>
+            {% for option in question.options.split(',') %}
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="question_{{ question.id }}" value="{{ option }}" required>
+                <label class="form-check-label">{{ option }}</label>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+{% endblock %}

@@ -1,0 +1,10 @@
+{% extends "layout.html" %}
+{% block content %}
+<h1>Feedback for Students</h1>
+<ul>
+    {% for feedback in feedbacks %}
+    <li>Student ID: {{ feedback.user_id }} - Question: {{ feedback.question.text }} - Comment: {{ feedback.comment }}</li>
+    {% endfor %}
+</ul>
+<a href="{{ url_for('main.admin_dashboard') }}" class="btn btn-primary">Back to Dashboard</a>
+{% endblock %}

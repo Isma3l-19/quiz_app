@@ -1,6 +1,9 @@
 {% extends "layout.html" %}
 {% block content %}
-<h1>Welcome, Admin {{ current_user.username }}!</h1>
-<a href="{{ url_for('main.add_question') }}" class="btn btn-primary">Add Question</a>
-<a href="{{ url_for('main.view_feedback') }}" class="btn btn-secondary">View Feedback</a>
+<h1>Admin Dashboard</h1>
+<h3>Manage Questions and Quiz Sets</h3>
+<ul>
+    <li><a href="{{ url_for('main.add_question') }}">Add Question</a></li>
+    <li><a href="{{ url_for('main.add_quiz_set') }}">Add Quiz Set</a></li>
+</ul>
 {% endblock %}

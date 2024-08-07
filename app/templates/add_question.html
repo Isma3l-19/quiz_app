@@ -1,27 +1,27 @@
 {% extends "layout.html" %}
 {% block content %}
-<div class="row">
-    <div class="col-md-6 offset-md-3">
-        <h2>Add New Question</h2>
-        <form method="POST" action="{{ url_for('main.add_question') }}">
-            <div class="form-group">
-                <label for="quiz_set_id">Quiz Set ID</label>
-                <input type="number" class="form-control" id="quiz_set_id" name="quiz_set_id" required>
-            </div>
-            <div class="form-group">
-                <label for="text">Question Text</label>
-                <input type="text" class="form-control" id="text" name="text" required>
-            </div>
-            <div class="form-group">
-                <label for="options">Options (comma-separated)</label>
-                <input type="text" class="form-control" id="options" name="options" required>
-            </div>
-            <div class="form-group">
-                <label for="correct_option">Correct Option</label>
-                <input type="text" class="form-control" id="correct_option" name="correct_option" required>
-            </div>
-            <button type="submit" class="btn btn-primary btn-lg btn-block">Add Question</button>
-        </form>
+<h1>Add Question</h1>
+<form method="POST">
+    <div class="form-group">
+        <label for="quiz_set_id">Select Quiz Set</label>
+        <select class="form-control" id="quiz_set_id" name="quiz_set_id">
+            {% for quiz_set in quiz_sets %}
+            <option value="{{ quiz_set.id }}">{{ quiz_set.title }}</option>
+            {% endfor %}
+        </select>
     </div>
-</div>
+    <div class="form-group">
+        <label for="text">Question Text</label>
+        <input type="text" class="form-control" id="text" name="text" required>
+    </div>
+    <div class="form-group">
+        <label for="options">Options (comma-separated)</label>
+        <input type="text" class="form-control" id="options" name="options" required>
+    </div>
+    <div class="form-group">
+        <label for="correct_option">Correct Option</label>
+        <input type="text" class="form-control" id="correct_option" name="correct_option" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Add Question</button>
+</form>
 {% endblock %}

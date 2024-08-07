@@ -1,6 +1,13 @@
 {% extends "layout.html" %}
 {% block content %}
-<h1>Welcome, {{ current_user.username }}!</h1>
-<p>This is your student dashboard.</p>
-<!-- Add code to list quizzes and allow students to take them -->
+<h1>Student Dashboard</h1>
+<p>You have taken {{ total_questions }} questions so far.</p>
+<p>Your overall score is {{ overall_score }}.</p>
+<h3>Select a Quiz Set to Take a Test</h3>
+<ul>
+    {% for quiz_set in quiz_sets %}
+    <li><a href="{{ url_for('main.take_test', quiz_set_id=quiz_set.id) }}">{{ quiz_set.title }}</a></li>
+    {% endfor %}
+</ul>
+<a href="{{ url_for('main.feedback') }}" class="btn btn-primary">View Feedback</a>
 {% endblock %}

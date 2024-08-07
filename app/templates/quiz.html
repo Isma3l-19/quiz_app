@@ -1,47 +1,18 @@
 {% extends "layout.html" %}
 {% block content %}
-<div class="row">
-    <div class="col-md-8 offset-md-2">
-        <h2>Quiz</h2>
-        <div id="quiz-container"></div>
-        <button class="btn btn-primary btn-lg btn-block" onclick="submitQuiz()">Submit</button>
+<h1>{{ quiz.title }}</h1>
+<form method="POST">
+    {% for question in quiz.questions %}
+    <div class="form-group">
+        <label>{{ question.text }}</label>
+        {% for option in question.options.split(',') %}
+        <div class="form-check">
+            <input class="form-check-input" type="radio" name="question_{{ question.id }}" value="{{ option }}" required>
+            <label class="form-check-label">{{ option }}</label>
+        </div>
+        {% endfor %}
     </div>
-</div>
-
-<script>
-async function fetchQuestions() {
-    const response = await fetch('/api/quiz/{{ quiz.id }}/questions');
-    const questions = await response.json();
-    const quizContainer = document.getElementById('quiz-container');
-    quizContainer.innerHTML = '';
-    questions.forEach((question, index) => {
-        const questionDiv = document.createElement('div');
-        questionDiv.classList.add('form-group');
-        questionDiv.innerHTML = `
-            <label>${question.text}</label>
-            ${question.options.map(option => `
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="question_${index}" value="${option}">
-                    <label class="form-check-label">${option}</label>
-                </div>
-            `).join('')}
-        `;
-        quizContainer.appendChild(questionDiv);
-    });
-}
-
-function submitQuiz() {
-    const quizContainer = document.getElementById('quiz-container');
-    const formData = new FormData(quizContainer);
-    fetch('/submit_quiz', {
-        method: 'POST',
-        body: formData
-    }).then(response => response.json())
-    .then(data => {
-        alert(`You scored ${data.score} out of ${data.total}`);
-    });
-}
-
-document.addEventListener('DOMContentLoaded', fetchQuestions);
-</script>
+    {% endfor %}
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
 {% endblock %}

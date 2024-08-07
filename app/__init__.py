@@ -2,6 +2,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_restful import Api
+from flask_migrate import Migrate
 from config import Config
 
 db = SQLAlchemy()
@@ -15,14 +16,16 @@ def create_app():
     # Initialize extensions
     db.init_app(app)
     login_manager.init_app(app)
+    migrate = Migrate(app, db)
 
     # Import and register blueprints
-    from app.routes import main_bp, QuizQuestionsAPI, AddQuestionAPI
-    api = Api(main_bp)
-    api.add_resource(QuizQuestionsAPI, '/api/quiz/<int:quiz_set_id>/questions')
-    api.add_resource(AddQuestionAPI, '/api/add_question')
-    
+    from app.routes import main_bp, api_bp, QuizQuestionsAPI, AddQuestionAPI
+    api = Api(api_bp)
+    api.add_resource(QuizQuestionsAPI, '/quiz/<int:quiz_set_id>/questions', endpoint='quiz_questions')
+    api.add_resource(AddQuestionAPI, '/add_question', endpoint='add_question')
+
     app.register_blueprint(main_bp)
+    app.register_blueprint(api_bp, url_prefix='/api')
 
     return app
 

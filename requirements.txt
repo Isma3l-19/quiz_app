@@ -3,4 +3,5 @@ Flask-SQLAlchemy
 Flask-Login
 Flask_wtf
 Flask-RESTful
- email-validator
+email-validator
+Flask-Migrate
