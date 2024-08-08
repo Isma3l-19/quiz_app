@@ -19,6 +19,7 @@ class User(db.Model, UserMixin):
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
 
+
 class Question(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     text = db.Column(db.String(256), nullable=False)
@@ -28,16 +29,22 @@ class Question(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     feedbacks = db.relationship('Feedback', backref='question', lazy=True)
 
+
 class QuizSet(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(128), nullable=False)
     questions = db.relationship('Question', backref='quiz_set', lazy=True)
+    quiz_results = db.relationship('QuizResult', backref='related_quiz_set', lazy=True)  # Renamed backref
+
 
 class QuizResult(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    quiz_set_id = db.Column(db.Integer, db.ForeignKey('quiz_set.id'), nullable=False)
     score = db.Column(db.Integer, nullable=False)
     date_taken = db.Column(db.DateTime, default=datetime.utcnow)
+    quiz_set = db.relationship('QuizSet', backref='results')  # Keep this backref
+
 
 class Feedback(db.Model):
     id = db.Column(db.Integer, primary_key=True)

@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+{% block content %}
+<h1>Review Student: {{ student.username }}</h1>
+
+<h3>Quiz Results</h3>
+<ul>
+    {% for result in quiz_results %}
+    <li>
+        <strong>{{ result.quiz_set.title }}</strong> - Score: {{ result.score }}/{{ result.quiz_set.questions|length }}
+        <a href="{{ url_for('main.review_question', result_id=result.id) }}">Add Comment</a>
+        {% if result.admin_comment %}
+        <p>Admin Comment: {{ result.admin_comment }}</p>
+        {% endif %}
+    </li>
+    {% endfor %}
+</ul>
+
+{% endblock %}

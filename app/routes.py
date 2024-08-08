@@ -47,19 +47,35 @@ def student_dashboard():
     user_results = QuizResult.query.filter_by(user_id=current_user.id).all()
     total_questions = sum(len(result.quiz_set.questions) for result in user_results)
     total_score = sum(result.score for result in user_results)
-    return render_template('student_dashboard.html', total_questions=total_questions, total_score=total_score, results=user_results)
+    
+    # Pass the quiz sets to the template
+    quiz_sets = QuizSet.query.all()
+    
+    return render_template(
+        'student_dashboard.html', 
+        total_questions=total_questions, 
+        total_score=total_score, 
+        results=user_results,
+        quiz_sets=quiz_sets  # Add quiz sets to the context
+    )
 
-@main_bp.route("/admin_dashboard")
+@main_bp.route('/admin_dashboard')
 @login_required
 def admin_dashboard():
     if current_user.role != 'admin':
         return redirect(url_for('main.login'))
-    return render_template('admin_dashboard.html')
+
+    # Query to get all students and their quiz results
+    students = User.query.filter_by(role='student').all()
+    for student in students:
+        student.completed_quizzes_count = QuizResult.query.filter_by(user_id=student.id).count()
+
+    return render_template('admin_dashboard.html', students=students)
 
 @main_bp.route("/quiz/<int:quiz_id>", methods=['GET', 'POST'])
 @login_required
 def quiz(quiz_id):
-    quiz = QuizSet.query.get_or_404(quiz_id)
+    quiz = QuizSet.query.get_or_404(quiz_id)  # Ensure the quiz_set is fetched correctly
     if request.method == 'POST':
         score = 0
         total = len(quiz.questions)
@@ -67,10 +83,13 @@ def quiz(quiz_id):
             selected_option = request.form.get(f'question_{question.id}')
             if selected_option == question.correct_option:
                 score += 1
-        result = QuizResult(user_id=current_user.id, score=score)
+        # Create a QuizResult object with the quiz_set_id
+        result = QuizResult(user_id=current_user.id, quiz_set_id=quiz.id, score=score)
         db.session.add(result)
         db.session.commit()
         return redirect(url_for('main.results', score=score, total=total))
+    return render_template('quiz.html', quiz=quiz)
+
     return render_template('quiz.html', quiz=quiz)
 
 @main_bp.route("/results")
@@ -119,6 +138,36 @@ def view_feedback():
         return redirect(url_for('main.login'))
     feedbacks = QuizResult.query.all()
     return render_template('view_feedback.html', feedbacks=feedbacks)
+
+
+
+@main_bp.route('/admin/review_student/<int:student_id>')
+@login_required
+def review_student(student_id):
+    if current_user.role != 'admin':
+        return redirect(url_for('main.login'))
+
+    student = User.query.get_or_404(student_id)
+    quiz_results = QuizResult.query.filter_by(user_id=student.id).all()
+
+    return render_template('review_student.html', student=student, quiz_results=quiz_results)
+
+
+@main_bp.route('/admin/review_question/<int:result_id>', methods=['GET', 'POST'])
+@login_required
+def review_question(result_id):
+    if current_user.role != 'admin':
+        return redirect(url_for('main.login'))
+
+    result = QuizResult.query.get_or_404(result_id)
+    if request.method == 'POST':
+        comment = request.form['comment']
+        result.admin_comment = comment
+        db.session.commit()
+        return redirect(url_for('main.review_student', student_id=result.user_id))
+
+    return render_template('review_questions.html', result=result)
+
 
 @main_bp.route("/logout")
 def logout():

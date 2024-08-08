@@ -2,12 +2,12 @@
 {% block content %}
 <h1>Student Dashboard</h1>
 <p>You have taken {{ total_questions }} questions so far.</p>
-<p>Your overall score is {{ overall_score }}.</p>
+<p>Your overall score is {{ total_score }}.</p> <!-- Corrected variable name to match routes.py -->
 <h3>Select a Quiz Set to Take a Test</h3>
 <ul>
     {% for quiz_set in quiz_sets %}
-    <li><a href="{{ url_for('main.take_test', quiz_set_id=quiz_set.id) }}">{{ quiz_set.title }}</a></li>
+    <li><a href="{{ url_for('main.quiz', quiz_id=quiz_set.id) }}">{{ quiz_set.title }}</a></li> <!-- Updated endpoint -->
     {% endfor %}
 </ul>
-<a href="{{ url_for('main.feedback') }}" class="btn btn-primary">View Feedback</a>
+<a href="{{ url_for('main.view_feedback') }}" class="btn btn-primary">View Feedback</a> <!-- Corrected endpoint -->
 {% endblock %}
