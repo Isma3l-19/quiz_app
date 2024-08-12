@@ -5,13 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <title>Quiz App</title>
+    <style>
+        .navbar { margin-bottom: 20px; }
+        .jumbotron { background: #f8f9fa; padding: 2rem 1rem; }
+        .row { margin-top: 2rem; }
+        footer { background-color: #f8f9fa; padding: 1rem 0; text-align: center; margin-top: 20px; }
+    </style>
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <a class="navbar-brand" href="{{ url_for('main.index') }}">Quiz App</a>
-        <div class="collapse navbar-collapse">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ml-auto">
                 {% if current_user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% if current_user.role == 'admin' %}{{ url_for('main.admin_dashboard') }}{% else %}{{ url_for('main.student_dashboard') }}{% endif %}">Dashboard</a>
+                    </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('main.logout') }}">Logout</a>
                     </li>
@@ -26,6 +38,7 @@
             </ul>
         </div>
     </nav>
+
     <div class="container">
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
@@ -36,6 +49,14 @@
         {% endwith %}
         {% block content %}{% endblock %}
     </div>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 Quiz App. All Rights Reserved.</p>
+            <a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a>
+        </div>
+    </footer>
+
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>

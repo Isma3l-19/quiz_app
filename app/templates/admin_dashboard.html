@@ -1,19 +1,25 @@
 {% extends "layout.html" %}
 {% block content %}
-<h1>Admin Dashboard</h1>
-<h3>Manage Questions and Quiz Sets</h3>
-<ul>
-    <li><a href="{{ url_for('main.add_question') }}">Add Question</a></li>
-    <li><a href="{{ url_for('main.add_quiz_set') }}">Add Quiz Set</a></li>
-</ul>
+<div class="container mt-4">
+    <h1>Admin Dashboard</h1>
+    <h3>Manage Questions and Quiz Sets</h3>
+    <ul class="list-group">
+        <li class="list-group-item"><a href="{{ url_for('main.add_question') }}">Add Question</a></li>
+        <li class="list-group-item"><a href="{{ url_for('main.add_quiz_set') }}">Add Quiz Set</a></li>
+    </ul>
 
-<h3>Review Student Progress</h3>
-<ul>
-    {% for student in students %}
-    <li>
-        <a href="{{ url_for('main.review_student', student_id=student.id) }}">{{ student.username }}</a>
-        - Completed Quizzes: {{ student.completed_quizzes_count }}
-    </li>
-    {% endfor %}
-</ul>
+    <h3 class="mt-4">Review Student Progress</h3>
+    <ul class="list-group">
+        {% for student in students %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            <a href="{{ url_for('main.review_student', student_id=student.id) }}">{{ student.username }}</a>
+            <span class="badge badge-primary badge-pill">Completed Quizzes: {{ student.completed_quizzes_count }}</span>
+        </li>
+        {% endfor %}
+    </ul>
+
+    <h3 class="mt-4">Quiz Results Overview</h3>
+    <p>Total Quizzes Taken: {{ total_quizzes }}</p>
+    <p>Average Score: {{ average_score }}</p>
+</div>
 {% endblock %}

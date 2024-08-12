@@ -1,9 +1,38 @@
 {% extends "layout.html" %}
 {% block content %}
-<div class="jumbotron">
+<div class="jumbotron text-center">
     <h1 class="display-4">Welcome to the Quiz App!</h1>
-    <p class="lead">Test your knowledge with our quizzes. Sign up to track your progress.</p>
+    <p class="lead">Challenge yourself and improve your knowledge with our engaging quizzes.</p>
     <hr class="my-4">
-    <a class="btn btn-primary btn-lg" href="{{ url_for('main.register') }}" role="button">Sign Up</a>
+
+    {% if current_user.is_authenticated %}
+        <p class="lead">Hello, {{ current_user.username }}! Ready for your next quiz?</p>
+        <a class="btn btn-primary btn-lg" href="{{ url_for('main.student_dashboard') }}" role="button">Go to Dashboard</a>
+    {% else %}
+        <p class="lead">Do you have an account?</p>
+        <a class="btn btn-primary btn-lg" href="{{ url_for('main.login') }}" role="button">Login</a>
+        <a class="btn btn-secondary btn-lg" href="{{ url_for('main.register') }}" role="button">Sign Up</a>
+    {% endif %}
+</div>
+
+<!-- Features Section -->
+<div class="row text-center">
+    <div class="col-lg-4">
+        <h3>Take Quizzes</h3>
+        <p>Explore a wide variety of quizzes on different topics.</p>
+    </div>
+    <div class="col-lg-4">
+        <h3>Track Your Progress</h3>
+        <p>Keep track of your scores and monitor your improvement.</p>
+    </div>
+    <div class="col-lg-4">
+        <h3>Admin Dashboard</h3>
+        <p>Manage quizzes and view student progress as an admin.</p>
+    </div>
+</div>
+
+<!-- Call to Action -->
+<div class="text-center mt-5">
+    <a class="btn btn-success btn-lg" href="{{ url_for('main.available_tests') }}" role="button">Start Your First Quiz!</a>
 </div>
 {% endblock %}
