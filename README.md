@@ -1,17 +1,33 @@
 # Quiz Application
 
-This project is a quiz application built using Flask. It allows users to register, log in, and take quizzes. Admins can review questions, add comments, and view student progress.
+This project is a dynamic quiz application built using Flask. It allows users to register, log in, and take quizzes. The application supports role-based access control, enabling admins to manage quiz content and monitor student progress, while students can take quizzes, track their scores, and receive feedback.
 
 ## Features
 
-- User Authentication (Register, Login, Logout)
-- Role-Based Access (Admin and Student)
-- Quiz Management
-  - Admin can add quiz questions
-  - Students can take quizzes and view feedback
-- Progress Tracking
-  - Students can see their progress and scores
-  - Admins can view students' progress
+- **User Authentication:**
+  - Register, Login, and Logout functionalities.
+  - Secure password storage using hashing.
+  
+- **Role-Based Access:**
+  - Admin and Student roles with distinct dashboards.
+  
+- **Quiz Management:**
+  - Admins can create quiz sets, add questions, and manage quizzes.
+  - Students can take quizzes, view their scores, and receive feedback.
+
+- **Progress Tracking:**
+  - Students can monitor their progress, view scores, and track their performance over time.
+  - Admins can view and review the progress of all students.
+
+- **Feedback System:**
+  - Admins can provide feedback on quiz performance.
+  - Students can view feedback from admins.
+
+- **REST API:**
+  - Exposes quiz management endpoints for creating and retrieving quiz questions via a REST API.
+
+- **Dark/Light Mode:**
+  - Toggle between dark and light themes for a better user experience.
 
 ## Setup
 
@@ -76,36 +92,39 @@ The application will be accessible at `http://127.0.0.1:5000`.
 ### Registering a User
 
 1. Navigate to the registration page (`/register`).
-2. Fill in the registration form and submit.
+2. Fill in the registration form with a username, email, password, and role (Student or Admin).
+3. Submit the form to create an account.
 
 ### Logging In
 
 1. Navigate to the login page (`/login`).
-2. Enter your credentials and log in.
+2. Enter your email and password.
+3. Upon successful login, you will be redirected to the appropriate dashboard based on your role.
 
 ### Admin Actions
 
-- **Add Questions:**
-  Navigate to the admin page and add quiz questions.
+- **Add Quiz Sets and Questions:**
+  - Admins can create new quiz sets and add questions to them through the admin dashboard.
 
-- **Review Questions:**
-  View and add comments to quiz questions which students can see as feedback.
+- **Review Student Progress:**
+  - View a list of all students and their quiz performance, including the number of completed quizzes and scores.
 
-- **View Student Progress:**
-  Track the progress and scores of students.
+- **Provide Feedback:**
+  - Admins can add comments and feedback on student performance in specific quizzes.
 
 ### Student Actions
 
 - **Take Quizzes:**
-  Select a topic and start taking quizzes. After each question, the next question will load automatically.
+  - Students can select a quiz set from their dashboard and start taking quizzes. Questions are displayed one at a time.
 
-- **View Feedback:**
-  After a question is reviewed by the admin, view feedback for each question.
+- **View Scores and Feedback:**
+  - After completing quizzes, students can view their scores and feedback provided by the admin.
+
 
 ## Contributing
 
-Contributions are welcome. Please open an issue or submit a pull request.
+Contributions are welcome! Please open an issue or submit a pull request with your improvements or bug fixes. Ensure your code follows the existing coding conventions and is well-documented.
 
 ## License
 
-This project is licensed under the MIT License.
+This project is licensed under the MIT License. See the `LICENSE` file for more information.
